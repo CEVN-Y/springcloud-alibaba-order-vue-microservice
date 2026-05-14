@@ -1,0 +1,44 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: order-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+      config:
+        server-addr: 127.0.0.1:8848
+        import-check:
+          enabled: false
+  datasource:
+    url: jdbc:mysql://localhost:3306/db_order?serverTimezone=Asia/Shanghai&useSSL=false
+    username: root
+    password: 123456789
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+
+# Nacos 集群模式
+seata:
+  enabled: true
+  application-id: ${spring.application.name}
+  tx-service-group: my_group
+  service:
+    vgroup-mapping:
+      my_group: default
+  registry:
+    type: nacos
+    nacos:
+      server-addr: 127.0.0.1:8848
+      group: SEATA_GROUP
+      application: seata-server
+  config:
+    type: nacos
+    nacos:
+      server-addr: 127.0.0.1:8848
+      group: SEATA_GROUP
+  enable-auto-data-source-proxy: true
