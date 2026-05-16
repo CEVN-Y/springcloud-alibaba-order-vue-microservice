@@ -21,7 +21,6 @@ spring:
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
-
 # Nacos集群模式
 seata:
   enabled: true
