@@ -1,6 +1,6 @@
 spring:
   application:
-    name: order-service
+    name: gateway-server
   cloud:
     nacos:
       discovery:

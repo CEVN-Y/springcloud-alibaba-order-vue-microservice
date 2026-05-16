@@ -35,6 +35,18 @@ import { ref, onMounted, getCurrentInstance } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 
+// 导入商品图片
+import img1 from '../../assets/images/products/iPhone15Pro.jpg'
+import img2 from '../../assets/images/products/AirPodsPro2.jpg'
+import img3 from '../../assets/images/products/华为Mate60Pro.jpg'
+import img4 from '../../assets/images/products/小米14Ultra.jpg'
+import img5 from '../../assets/images/products/OPPOFindX7Ultra.jpg'
+import img6 from '../../assets/images/products/vivoX100Pro.jpg'
+import img7 from '../../assets/images/products/荣耀Magic6Pro.jpg'
+import img8 from '../../assets/images/products/三星GalaxyBuds3Pro.jpg'
+import img9 from '../../assets/images/products/小米Buds5Pro.jpg'
+import img10 from '../../assets/images/products/华为FreeBudsPro4.jpg'
+
 const { proxy } = getCurrentInstance()
 const route = useRoute()
 const id = route.params.id
@@ -58,16 +70,16 @@ const username = ref(localStorage.getItem('username') || '')
 
 // 本地商品数据补充
 const localGoodsData = {
-  1: { name: 'iPhone 15 Pro', category: '手机数码', img: 'https://picsum.photos/seed/iphone15/450/450' },
-  2: { name: 'AirPods Pro 2', category: '智能穿戴', img: 'https://picsum.photos/seed/airpods/450/450' },
-  3: { name: '华为 Mate 60 Pro', category: '手机数码', img: 'https://picsum.photos/seed/huawei/450/450' },
-  4: { name: '小米 14 Ultra', category: '手机数码', img: 'https://picsum.photos/seed/xiaomi14/450/450' },
-  5: { name: 'OPPO Find X7 Ultra', category: '手机数码', img: 'https://picsum.photos/seed/oppo/450/450' },
-  6: { name: 'vivo X100 Pro', category: '手机数码', img: 'https://picsum.photos/seed/vivo/450/450' },
-  7: { name: '荣耀 Magic6 Pro', category: '手机数码', img: 'https://picsum.photos/seed/honor/450/450' },
-  8: { name: '三星 Galaxy Buds3 Pro', category: '智能穿戴', img: 'https://picsum.photos/seed/samsung/450/450' },
-  9: { name: '小米 Buds 5 Pro', category: '智能穿戴', img: 'https://picsum.photos/seed/xiaomibuds/450/450' },
-  10: { name: '华为 FreeBuds Pro 4', category: '智能穿戴', img: 'https://picsum.photos/seed/huaweibuds/450/450' }
+  1: { name: 'iPhone 15 Pro', category: '手机数码', img: img1 },
+  2: { name: 'AirPods Pro 2', category: '智能穿戴', img: img2 },
+  3: { name: '华为 Mate 60 Pro', category: '手机数码', img: img3 },
+  4: { name: '小米 14 Ultra', category: '手机数码', img: img4 },
+  5: { name: 'OPPO Find X7 Ultra', category: '手机数码', img: img5 },
+  6: { name: 'vivo X100 Pro', category: '手机数码', img: img6 },
+  7: { name: '荣耀 Magic6 Pro', category: '手机数码', img: img7 },
+  8: { name: '三星 Galaxy Buds3 Pro', category: '智能穿戴', img: img8 },
+  9: { name: '小米 Buds 5 Pro', category: '智能穿戴', img: img9 },
+  10: { name: '华为 FreeBuds Pro 4', category: '智能穿戴', img: img10 }
 }
 
 // 加载商品&用户
@@ -125,23 +137,11 @@ const createOrder = async () => {
   }
   
   try {
+    // request.js 拦截器已经处理了：成功直接返回 data，失败直接 reject
     const response = await proxy.$axios.get('/order/create/' + userId + '/' + id)
-    // 检查后端返回的code
-    if (response.code === 200) {
-      ElMessage.success('✅ 下单成功！')
-      // 下单成功后刷新库存和用户余额
-      refreshData()
-    } else {
-      // 根据错误信息显示不同的提示
-      const message = response.message || response.msg || '下单失败'
-      if (message.includes('余额')) {
-        ElMessage.warning('💰 ' + message)
-      } else if (message.includes('库存')) {
-        ElMessage.warning('📦 ' + message)
-      } else {
-        ElMessage.error('❌ ' + message)
-      }
-    }
+    ElMessage.success('✅ 下单成功！')
+    // 下单成功后刷新库存和用户余额
+    refreshData()
   } catch (error) {
     const errorMsg = error.response?.data?.message || error.response?.data?.msg || error.message
     if (errorMsg.includes('余额')) {

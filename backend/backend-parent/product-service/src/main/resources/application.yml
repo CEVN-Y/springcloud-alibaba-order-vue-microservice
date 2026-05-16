@@ -1,17 +1,7 @@
-server:
-  port: 8082
-
 spring:
-  application:
-    name: product-service
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848
-      config:
-        server-addr: 127.0.0.1:8848
-        import-check:
-          enabled: false
+  config:
+    import: optional:nacos:${spring.application.name}.yml
+
   datasource:
     url: jdbc:mysql://localhost:3306/db_product?serverTimezone=Asia/Shanghai&useSSL=false
     username: root
@@ -21,7 +11,7 @@ spring:
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
-# Nacos集群模式
+
 seata:
   enabled: true
   application-id: ${spring.application.name}
@@ -41,3 +31,6 @@ seata:
       server-addr: 127.0.0.1:8848
       group: SEATA_GROUP
   enable-auto-data-source-proxy: true
+
+server:
+  port: 8082

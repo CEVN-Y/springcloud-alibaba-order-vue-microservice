@@ -90,10 +90,24 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, getCurrentInstance } from 'vue'
+import { ref, computed, onMounted, watch, getCurrentInstance } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useRoute } from 'vue-router'
+
+// 导入商品图片
+import img1 from '../../assets/images/products/iPhone15Pro.jpg'
+import img2 from '../../assets/images/products/AirPodsPro2.jpg'
+import img3 from '../../assets/images/products/华为Mate60Pro.jpg'
+import img4 from '../../assets/images/products/小米14Ultra.jpg'
+import img5 from '../../assets/images/products/OPPOFindX7Ultra.jpg'
+import img6 from '../../assets/images/products/vivoX100Pro.jpg'
+import img7 from '../../assets/images/products/荣耀Magic6Pro.jpg'
+import img8 from '../../assets/images/products/三星GalaxyBuds3Pro.jpg'
+import img9 from '../../assets/images/products/小米Buds5Pro.jpg'
+import img10 from '../../assets/images/products/华为FreeBudsPro4.jpg'
 
 const { proxy } = getCurrentInstance()
+const route = useRoute()
 
 // 当前登录用户
 const username = ref(localStorage.getItem('username') || '用户')
@@ -113,18 +127,32 @@ const navToCategory = {
   '耳机': '智能穿戴'
 }
 
+// 商品图片映射
+const imgMap = {
+  1: img1,
+  2: img2,
+  3: img3,
+  4: img4,
+  5: img5,
+  6: img6,
+  7: img7,
+  8: img8,
+  9: img9,
+  10: img10
+}
+
 // 商品数据
 const goodsList = ref([
-  {id:1, name:'iPhone 15 Pro', price:8999, stock:99, category:'手机数码', img:'https://picsum.photos/seed/iphone15/200/200'},
-  {id:2, name:'AirPods Pro 2', price:1899, stock:198, category:'智能穿戴', img:'https://picsum.photos/seed/airpods/200/200'},
-  {id:3, name:'华为 Mate 60 Pro', price:6999, stock:80, category:'手机数码', img:'https://picsum.photos/seed/huawei/200/200'},
-  {id:4, name:'小米 14 Ultra', price:6499, stock:90, category:'手机数码', img:'https://picsum.photos/seed/xiaomi14/200/200'},
-  {id:5, name:'OPPO Find X7 Ultra', price:5999, stock:70, category:'手机数码', img:'https://picsum.photos/seed/oppo/200/200'},
-  {id:6, name:'vivo X100 Pro', price:5999, stock:85, category:'手机数码', img:'https://picsum.photos/seed/vivo/200/200'},
-  {id:7, name:'荣耀 Magic6 Pro', price:5699, stock:66, category:'手机数码', img:'https://picsum.photos/seed/honor/200/200'},
-  {id:8, name:'三星 Galaxy Buds3 Pro', price:1599, stock:120, category:'智能穿戴', img:'https://picsum.photos/seed/samsung/200/200'},
-  {id:9, name:'小米 Buds 5 Pro', price:899, stock:200, category:'智能穿戴', img:'https://picsum.photos/seed/xiaomibuds/200/200'},
-  {id:10, name:'华为 FreeBuds Pro 4', price:1299, stock:150, category:'智能穿戴', img:'https://picsum.photos/seed/huaweibuds/200/200'},
+  {id:1, name:'iPhone 15 Pro', price:8999, stock:99, category:'手机数码', img:img1},
+  {id:2, name:'AirPods Pro 2', price:1899, stock:198, category:'智能穿戴', img:img2},
+  {id:3, name:'华为 Mate 60 Pro', price:6999, stock:80, category:'手机数码', img:img3},
+  {id:4, name:'小米 14 Ultra', price:6499, stock:90, category:'手机数码', img:img4},
+  {id:5, name:'OPPO Find X7 Ultra', price:5999, stock:70, category:'手机数码', img:img5},
+  {id:6, name:'vivo X100 Pro', price:5999, stock:85, category:'手机数码', img:img6},
+  {id:7, name:'荣耀 Magic6 Pro', price:5699, stock:66, category:'手机数码', img:img7},
+  {id:8, name:'三星 Galaxy Buds3 Pro', price:1599, stock:120, category:'智能穿戴', img:img8},
+  {id:9, name:'小米 Buds 5 Pro', price:899, stock:200, category:'智能穿戴', img:img9},
+  {id:10, name:'华为 FreeBuds Pro 4', price:1299, stock:150, category:'智能穿戴', img:img10},
 ])
 
 // 购物车数量
@@ -149,11 +177,36 @@ const filteredGoods = computed(() => {
   return result
 })
 
+// 获取商品列表（刷新库存）
+const fetchGoodsList = async () => {
+  try {
+    const data = await proxy.$axios.get('/product/list')
+    // 只更新库存
+    data.forEach(item => {
+      const good = goodsList.value.find(g => g.id === item.id)
+      if (good) {
+        good.stock = item.stock
+      }
+    })
+  } catch (error) {
+    ElMessage.error('刷新库存失败')
+  }
+}
+
 // 检查登录状态
 onMounted(() => {
   if (!localStorage.getItem('userId')) {
     ElMessage.warning('请先登录')
     proxy.$router.push('/login')
+  } else {
+    fetchGoodsList()
+  }
+})
+
+// 监听路由变化，回到首页时刷新数据
+watch(() => route.path, (newPath) => {
+  if (newPath === '/' || newPath === '/home') {
+    fetchGoodsList()
   }
 })
 
